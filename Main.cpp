@@ -6,14 +6,14 @@ using namespace std;
 
 struct Node 
 { 
-    //string key;
-    vector<string> key;
+    string key;
+    //vector<string> key;
     int level;
     vector<Node *>child; 
     struct Node *prev;
 }; 
    
-Node *newNode(vector<string> key) 
+Node *newNode(string key) 
 { 
     Node *temp = new Node; 
     temp->key = key; 
@@ -41,10 +41,10 @@ void LevelOrderTraversal(Node * root)
 
             Node * p = q.front(); 
             q.pop(); 
-            for(int i = 0;i<p->key.size();i++)
-            {
-                cout << p->key[i] << "  ---->  "<<endl;
-            }
+            //for(int i = 0;i<p->key.size();i++)
+            //{
+                cout << p->key <<endl;
+            //}
              
  
             for (int i=0; i<p->child.size(); i++) 
@@ -90,77 +90,176 @@ int main()
     list<int> l;
     vector<string> vvv;
     vvv.push_back("data");
-    Node *root = newNode(vvv);
+    Node *root = newNode("data");
     Node *temp = root;
     int pos = str.find("{");
     int lpos = pos;
     stack.push('{');
     bool flag = true;
     int lvl=0;
+    int aC = 0;
     for(int i=pos+1;i<str.length();i++)
     {
         
         if(str[i]=='{')
         { 
-            cout<<"dddddd + "<<endl;
+            //cout<<"dddddd + "<<endl;
             int len = i-lpos;
             string s = str.substr(lpos+1,len-1);
             vector<string> vv = split(s, ',');
-            Node *c = newNode(vv);
             if(lvl==0)
             {
-                temp->child.push_back(c);
-                temp->prev = temp;
+                for(int k=0;k<vv.size();k++)
+                {
+                    temp->child.push_back(newNode(vv[k]));
+                    temp->prev = temp;
+                }
+                
                 lvl++;
             }
             else
             {
                 int lll = temp->level;
+                //int lll = vv.size()-1;
+                for(int k=0;k<vv.size();k++)
+                {
+                    (temp->child[lll]->child).push_back(newNode(vv[k]));
+                    temp->child[lll]->prev = temp;
+                }
                 
-                (temp->child[lll]->child).push_back(newNode(vv));
-                temp->child[lll]->prev = temp;
                 temp = temp->child[lll];
+                if(vv.size()!=0)
+                {
+                    temp->level = temp->level+vv.size()-1;
+                }
+                
             }
             lpos = i;
             stack.push('{');
             l.push_back(i);
             flag = true;
         }
-        else if(str[i] == '}')
+        else if(str[i] == '[')
+        { 
+            //cout<<"1111111111111 + "<<endl;
+            int len = i-lpos;
+            string s = str.substr(lpos+1,len-1);
+            vector<string> vv = split(s, ',');
+            //Node *c = newNode(vv);
+            if(lvl==0)
+            {
+                for(int k=0;k<vv.size();k++)
+                {
+                    temp->child.push_back(newNode(vv[k]));
+                    temp->prev = temp;
+                }
+                lvl++;
+            }
+            else
+            {
+                int lll = temp->level;
+                
+                for(int k=0;k<vv.size();k++)
+                {
+                    (temp->child[lll]->child).push_back(newNode(vv[k]));
+                    temp->child[lll]->prev = temp;
+                }
+                temp = temp->child[lll];
+                aC = vv.size()-1;
+            }
+            lpos = i;
+            stack.push('[');
+            l.push_back(i);
+            flag = true;
+        }
+        
+        else if(str[i] == ']')
         {
+            //cout<<"2222222222222 + "<<endl;
             int len = i-l.back();
             string s = str.substr(l.back()+1,len-1);
             vector<string> vv = split(s, ',');
-            Node *c = newNode(vv);
+            //Node *c = newNode(vv);
             if(!l.empty())
             {
                 l.pop_back();
             }
             stack.pop();
             
-            //cout<<"bbbbbbb + "<<endl;
+            if(lvl==0)
+            {
+                for(int k=0;k<vv.size();k++)
+                {
+                    temp->child.push_back(newNode(vv[k]));
+                    temp->prev = temp;
+                } 
+                lvl++;
+            }
+            else
+            {
+                if(flag)
+                {
+                    int lll = temp->level;
+                    //cout<<"oiuytr + "<<temp->key<<"  "<<temp->child.size()<<endl;
+                    
+                    for(int k=0;k<vv.size();k++)
+                    {
+                        (temp->child[aC]->child).push_back(newNode(vv[k]));
+                        temp->child[aC]->prev = temp;
+                    }
+                    //cout<<"wewre + "<<endl;
+                    temp = temp->prev;
+                }
+            }
+            
+            lpos = i+1;
+            if(i+1 !=str.length() && str[i+1]==',')
+            {
+                flag =true;
+            }
+            else
+            {
+                flag = false;
+            }
+            l.push_back(i+1);
+            
+        }
+        
+        
+        
+        else if(str[i] == '}')
+        {
+            //cout<<"eeeeeeeeeeeee + "<<endl;
+            int len = i-l.back();
+            string s = str.substr(l.back()+1,len-1);
+            vector<string> vv = split(s, ',');
+            //Node *c = newNode(vv);
+            if(!l.empty())
+            {
+                l.pop_back();
+            }
+            stack.pop();
+            
             
             if(i+1 !=str.length() && str[i+1]==',')
             {
-                //cout<<"cccccccccccccccc + "<<endl;
                 if(flag)
                 {
                         int lll = temp->level;
-                        (temp->child[lll]->child).push_back(newNode(vv));
-                        (temp->child[lll]->prev) = temp;
+                        for(int k=0;k<vv.size();k++)
+                        {
+                            (temp->child[lll]->child).push_back(newNode(vv[k]));
+                            temp->child[lll]->prev = temp;
+                        }
+                        temp->level = temp->level+1;
                         temp = temp->prev;
+                        //temp->level = temp->level+1;
                         lpos = i+1;
                 }
                 else
                 {
-                    //int lll = temp->level;
-                    //(temp->child[lll]->child).push_back(newNode(s));
-                    //(temp->child[lll]->prev) = temp;
                     temp->level = temp->level+1;
                     temp = temp->prev;
-                    
-                    
-                    //lvl--;
                     lpos = i+1;
                 }
                 
@@ -170,7 +269,11 @@ int main()
             
                 if(lvl==0)
                 {
-                    temp->child.push_back(newNode(vv)); 
+                    for(int k=0;k<vv.size();k++)
+                    {
+                        temp->child.push_back(newNode(vv[k]));
+                        temp->prev = temp;
+                    }
                     lvl++;
                 }
                 else
@@ -178,8 +281,11 @@ int main()
                     if(flag)
                     {
                         int lll = temp->level;
-                        (temp->child[lll]->child).push_back(newNode(vv));
-                        (temp->child[lll]->prev) = temp;
+                        for(int k=0;k<vv.size();k++)
+                        {
+                            (temp->child[lll]->child).push_back(newNode(vv[k]));
+                            temp->child[lll]->prev = temp;
+                        }
                         temp = temp->prev;
                     }
                 }
@@ -190,7 +296,8 @@ int main()
     
     cout << "\nLevel order traversal Before Mirroring\n"; 
     LevelOrderTraversal(root);
-
+    
+    cout<<root->child[0]->child[2]->child[0]->child[1]->child[0]->key<<endl;
 
    return 0;
 }
