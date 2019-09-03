@@ -93,12 +93,17 @@ int main()
     Node *root = newNode("data");
     Node *temp = root;
     int pos = str.find("{");
-    int lpos = pos;
+    if(pos==string::npos)
+    {
+        pos = 0;
+    }
+    int lpos = 0;
     stack.push('{');
     bool flag = true;
     int lvl=0;
     int aC = 0;
-    for(int i=pos+1;i<str.length();i++)
+    //cout<<"ddddddsws + "<<pos<<endl;
+    for(int i=1;i<str.length();i++)
     {
         
         if(str[i]=='{')
@@ -107,7 +112,7 @@ int main()
             int len = i-lpos;
             string s = str.substr(lpos+1,len-1);
             vector<string> vv = split(s, ',');
-            if(lvl==0)
+            if(lvl==0 || stack.size()==1)
             {
                 for(int k=0;k<vv.size();k++)
                 {
@@ -119,7 +124,9 @@ int main()
             }
             else
             {
+                //cout<<"111d111ddddd + "<<endl;
                 int lll = temp->level;
+                //cout<<"temp key"<<temp->child[0]->child[1]->key<<"kgh "<<lll<<endl;
                 //int lll = vv.size()-1;
                 for(int k=0;k<vv.size();k++)
                 {
@@ -132,6 +139,8 @@ int main()
                 {
                     temp->level = temp->level+vv.size()-1;
                 }
+                
+                //cout<<"22111d111ddddd + "<<endl;
                 
             }
             lpos = i;
@@ -243,18 +252,23 @@ int main()
             
             if(i+1 !=str.length() && str[i+1]==',')
             {
+                //cout<<"eeeededewfeeeeeeeeee + "<<endl;
+                
                 if(flag)
                 {
+                    //cout<<"eeeeeeeeeeeee + "<<endl;
                         int lll = temp->level;
                         for(int k=0;k<vv.size();k++)
                         {
                             (temp->child[lll]->child).push_back(newNode(vv[k]));
                             temp->child[lll]->prev = temp;
                         }
+                        //cout<<"dweeeeeeeeeee + "<<endl;
                         temp->level = temp->level+1;
                         temp = temp->prev;
                         //temp->level = temp->level+1;
                         lpos = i+1;
+                        //cout<<"jhgewqeeeeeee + "<<endl;
                 }
                 else
                 {
@@ -262,7 +276,7 @@ int main()
                     temp = temp->prev;
                     lpos = i+1;
                 }
-                
+                flag = true;
             }
             else
             {
@@ -289,15 +303,16 @@ int main()
                         temp = temp->prev;
                     }
                 }
+                flag = false;
             }
-            flag = false;
+            
         }
     }
     
     cout << "\nLevel order traversal Before Mirroring\n"; 
     LevelOrderTraversal(root);
-    
-    cout<<root->child[0]->child[2]->child[0]->child[1]->child[0]->key<<endl;
+    //cout<<root->child[1]->child[1]->key<<endl;
+    //cout<<root->child[0]->child[1]->child[1]->child[1]->child[0]->key<<endl;
 
    return 0;
 }
